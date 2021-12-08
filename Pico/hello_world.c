@@ -1,28 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 #include "pico/stdlib.h"
+#include "commands.h"
+#include "day01.h"
 
 #define MAX_COMMAND_ENTRIES   (40)
 
 #define LED_PIN (25)
 
-typedef void (*CommandHandler_t)(const char *commandString, size_t commandStringLength);
-
-
-typedef struct
-{
-  const char* command;
-  CommandHandler_t handler;
-} CommandEntry_t;
-
-
 static CommandEntry_t m_commandEntries[MAX_COMMAND_ENTRIES];
 static uint8_t m_nrOfCommandEntries;
 
-static bool AddCommand(const CommandEntry_t* command);
-
 static void LedOnCommand(const char *commandString, size_t commandStringLength);
 static void LedOffCommand(const char *commandString, size_t commandStringLength);
+static void HelpCommand(const char *commandString, size_t commandStringLength);
 
 int main()
 {
@@ -41,8 +32,16 @@ int main()
       .handler = LedOffCommand,
   };
 
-  AddCommand(&ledOnEntry);
-  AddCommand(&ledOffEntry);
+  const CommandEntry_t helpEntry = {
+      .command = "help",
+      .handler = HelpCommand,
+  };
+
+  Commands_Add(&helpEntry);
+  Commands_Add(&ledOnEntry);
+  Commands_Add(&ledOffEntry);
+
+  day01_initialize();
 
   char readBuffer[50];
   memset(readBuffer, 0, sizeof(readBuffer));
@@ -105,12 +104,12 @@ int main()
       }
     }
 
-    //gpio_xor_mask(1 << LED_PIN);
+    gpio_xor_mask(1 << LED_PIN);
   }
   return 0;
 }
 
-static bool AddCommand(const CommandEntry_t* command)
+bool Commands_Add(const CommandEntry_t* command)
 {
   if (m_nrOfCommandEntries < MAX_COMMAND_ENTRIES)
   {
@@ -118,6 +117,14 @@ static bool AddCommand(const CommandEntry_t* command)
     return true;
   }
   return false;
+}
+
+static void HelpCommand(const char *commandString, size_t commandStringLength)
+{
+  for (int i = 0; i < m_nrOfCommandEntries; i++)
+  {
+    printf("%s\n", m_commandEntries[i].command);
+  }
 }
 
 static void LedOnCommand(const char *commandString, size_t commandStringLength)

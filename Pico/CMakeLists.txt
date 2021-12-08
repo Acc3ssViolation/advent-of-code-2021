@@ -8,6 +8,8 @@ pico_sdk_init()
 
 add_executable(hello_world
     hello_world.c
+    day01.c
+    day01_imp.s
 )
 
 target_link_libraries(hello_world pico_stdlib)
