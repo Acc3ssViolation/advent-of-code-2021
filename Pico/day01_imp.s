@@ -1,5 +1,6 @@
 .global day01_imp_run
 
+// Calculate how many times a value in the array is higher than the previous value (n > n - 1)
 // uint32_t day01_imp_run(const uint32_t *input, uint32_t length);
 day01_imp_run:
     // r0 = array pointer
