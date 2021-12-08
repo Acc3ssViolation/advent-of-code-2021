@@ -41,7 +41,7 @@ int main()
   Commands_Add(&ledOnEntry);
   Commands_Add(&ledOffEntry);
 
-  day01_initialize();
+  Day01_Initialize();
 
   char readBuffer[50];
   memset(readBuffer, 0, sizeof(readBuffer));

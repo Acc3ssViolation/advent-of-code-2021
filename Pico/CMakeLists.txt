@@ -10,6 +10,7 @@ add_executable(hello_world
     hello_world.c
     day01.c
     day01_imp.s
+    day01_data.c
 )
 
 target_link_libraries(hello_world pico_stdlib)

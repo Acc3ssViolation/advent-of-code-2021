@@ -4,9 +4,9 @@
 
 static void Day01Command(const char *commandString, size_t commandStringLength);
 
-extern uint32_t day01_imp_run(uint32_t a, uint32_t b);
+extern uint32_t day01_imp_run(const uint32_t *input, uint32_t length);
 
-void day01_initialize(void)
+void Day01_Initialize(void)
 {
     const CommandEntry_t command = {
         .command = "day01",
@@ -20,11 +20,11 @@ static void Day01Command(const char *commandString, size_t commandStringLength)
 {
     printf("Beginning day01...\n");
 
-    uint32_t a = 2012;
-    uint32_t b = 900000;
-    uint32_t result = day01_imp_run(a, b);
+    uint32_t inputLength;
+    uint32_t *input = Day01_GetInput(&inputLength);
+    uint32_t result = day01_imp_run(input, inputLength);
 
-    printf("%u + %u = %u\n", a, b, result);
+    printf("%u samples -> %u\n", inputLength, result);
 
     printf("Finished day01...\n");
 }
