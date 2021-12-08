@@ -105,7 +105,7 @@ day01_part2_imp_run:
     mov sumPrev, sumNow
     // Subtract 'first' value from sum, which is at the array pointer
     ldr temp, [array, #0]
-    sub sumPrev, sumPrev, temp
+    sub sumNow, sumNow, temp
 
     // Check if we hit the end of the array
     add array, array, #4

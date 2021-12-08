@@ -102,9 +102,9 @@ int main()
 
         index++;
       }
-    }
 
-    gpio_xor_mask(1 << LED_PIN);
+      gpio_xor_mask(1 << LED_PIN);
+    }
   }
   return 0;
 }

@@ -1,8 +1,11 @@
 #include <stdint.h>
 
+#define USE_REAL_DATA   1
+
 static uint32_t day01_input[] =
 {
- 103,
+#if USE_REAL_DATA
+  103,
   106,
   107,
   110,
@@ -2002,6 +2005,18 @@ static uint32_t day01_input[] =
   9532,
   9538,
   9548,
+#else
+199,
+200,
+208,
+210,
+200,
+207,
+240,
+269,
+260,
+263,
+#endif
 };
 
 uint32_t* Day01_GetInput(uint32_t *count)
