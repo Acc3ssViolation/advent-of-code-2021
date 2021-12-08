@@ -6,7 +6,7 @@ static void Day01Command(const char *commandString, size_t commandStringLength);
 static void Day02Command(const char *commandString, size_t commandStringLength);
 
 extern uint32_t day01_imp_run(const uint32_t *input, uint32_t length);
-extern uint32_t day02_imp_run(const uint32_t *input, uint32_t length);
+extern uint32_t day01_part2_imp_run(const uint32_t *input, uint32_t length);
 
 void Day01_Initialize(void)
 {
@@ -34,6 +34,10 @@ static void Day01Command(const char *commandString, size_t commandStringLength)
 
     printf("%u samples -> %u\n", inputLength, result);
 
+    result = day01_part2_imp_run(input, inputLength);
+
+    printf("%u samples -> %u\n", inputLength, result);
+
     printf("Finished day01...\n");
 }
 
@@ -41,11 +45,6 @@ static void Day02Command(const char *commandString, size_t commandStringLength)
 {
     printf("Beginning day02...\n");
 
-    uint32_t inputLength;
-    uint32_t *input = Day01_GetInput(&inputLength);
-    uint32_t result = day02_imp_run(input, inputLength);
-
-    printf("%u samples -> %u\n", inputLength, result);
 
     printf("Finished day02...\n");
 }
