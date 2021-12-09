@@ -8,6 +8,11 @@ static void Day02Command(const char *commandString, size_t commandStringLength);
 extern uint32_t day01_imp_run(const uint32_t *input, uint32_t length);
 extern uint32_t day01_part2_imp_run(const uint32_t *input, uint32_t length);
 
+extern uint32_t day02_part1(const char **input, uint32_t length);
+
+
+extern uint32_t day02_get_number(const char* input);
+
 void Day01_Initialize(void)
 {
     const CommandEntry_t command1 = {
@@ -45,6 +50,17 @@ static void Day02Command(const char *commandString, size_t commandStringLength)
 {
     printf("Beginning day02...\n");
 
+    const char* a = "forward 20";
+    const char* b = "up 9212";
+    const char* c = "down 2";
+
+    uint32_t na = day02_get_number(a);
+    uint32_t nb = day02_get_number(b);
+    uint32_t nc = day02_get_number(c);
+
+    printf("'%s' -> %u\n", a, na);
+    printf("'%s' -> %u\n", b, nb);
+    printf("'%s' -> %u\n", c, nc);
 
     printf("Finished day02...\n");
 }

@@ -11,6 +11,7 @@ add_executable(hello_world
     day01.c
     day01_data.c
     day01_imp.s
+    day02_data.c
     day02_imp.s
 )
 
