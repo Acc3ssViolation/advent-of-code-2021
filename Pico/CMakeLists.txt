@@ -15,7 +15,7 @@ add_executable(hello_world
     day02_imp.s
 )
 
-target_link_libraries(hello_world pico_stdlib)
+target_link_libraries(hello_world pico_stdlib hardware_exception hardware_watchdog)
 
 pico_enable_stdio_usb(hello_world 1)
 pico_enable_stdio_uart(hello_world 0)

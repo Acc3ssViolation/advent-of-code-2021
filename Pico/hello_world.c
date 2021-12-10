@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "pico/stdlib.h"
+#include "hardware/exception.h"
+#include "hardware/watchdog.h"
 #include "commands.h"
 #include "day01.h"
 
@@ -10,14 +12,24 @@
 
 static CommandEntry_t m_commandEntries[MAX_COMMAND_ENTRIES];
 static uint8_t m_nrOfCommandEntries;
+static bool m_resetByWatchdog;
 
 static void LedOnCommand(const char *commandString, size_t commandStringLength);
 static void LedOffCommand(const char *commandString, size_t commandStringLength);
 static void HelpCommand(const char *commandString, size_t commandStringLength);
+static void InfoCommand(const char *commandString, size_t commandStringLength);
+
+static void HardfaultHandler(void);
 
 int main()
 {
   stdio_init_all();
+
+  m_resetByWatchdog = watchdog_caused_reboot();
+
+  exception_handler_t originalHandler = exception_set_exclusive_handler(HARDFAULT_EXCEPTION, HardfaultHandler);
+
+  watchdog_enable(1000, true);
 
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
@@ -37,7 +49,13 @@ int main()
       .handler = HelpCommand,
   };
 
+  const CommandEntry_t infoEntry = {
+      .command = "info",
+      .handler = InfoCommand,
+  };
+
   Commands_Add(&helpEntry);
+  Commands_Add(&infoEntry);
   Commands_Add(&ledOnEntry);
   Commands_Add(&ledOffEntry);
 
@@ -49,7 +67,10 @@ int main()
 
   while(true)
   {
-    int chr = getchar_timeout_us(100000ul);
+    int chr = getchar_timeout_us(10000ul);
+
+    watchdog_update();
+
     if (chr != PICO_ERROR_TIMEOUT)
     {
       if (chr == 0x7F || chr == 0x08)
@@ -102,9 +123,9 @@ int main()
 
         index++;
       }
-    }
 
-    gpio_xor_mask(1 << LED_PIN);
+      gpio_xor_mask(1 << LED_PIN);
+    }
   }
   return 0;
 }
@@ -137,4 +158,15 @@ static void LedOffCommand(const char *commandString, size_t commandStringLength)
 {
   gpio_put(LED_PIN, 0);
   printf("LED off");
+}
+
+static void InfoCommand(const char *commandString, size_t commandStringLength)
+{
+  printf("Reset by watchdog: %s", m_resetByWatchdog ? "yes" : "no");
+}
+
+static void HardfaultHandler(void)
+{
+  // Wait for watchdog to reset us
+  while(1) {}
 }

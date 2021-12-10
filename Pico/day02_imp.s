@@ -40,7 +40,7 @@ day02_get_number:
 
     // Find space
 1:
-    ldr temp, [input]
+    ldrb temp, [input]
     // Check for end of string
     cmp temp, #0
     beq 2f
@@ -50,7 +50,7 @@ day02_get_number:
     bne 1b
     // We are now one past the space
 1:
-    ldr temp, [input]
+    ldrb temp, [input]
     // Check for end of string and character range (0 - 9)
     cmp temp, #0
     beq 2f
