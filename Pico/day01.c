@@ -50,17 +50,22 @@ static void Day02Command(const char *commandString, size_t commandStringLength)
 {
     printf("Beginning day02...\n");
 
-    const char* a = "forward 20";
-    const char* b = "up 9212";
-    const char* c = "down 2";
+    // const char* a = "forward 20";
+    // const char* b = "up 9212";
+    // const char* c = "down 2";
 
-    uint32_t na = day02_get_number(a);
-    uint32_t nb = day02_get_number(b);
-    uint32_t nc = day02_get_number(c);
+    // uint32_t na = day02_get_number(a);
+    // uint32_t nb = day02_get_number(b);
+    // uint32_t nc = day02_get_number(c);
 
-    printf("'%s' -> %u\n", a, na);
-    printf("'%s' -> %u\n", b, nb);
-    printf("'%s' -> %u\n", c, nc);
+    // printf("'%s' -> %u\n", a, na);
+    // printf("'%s' -> %u\n", b, nb);
+    // printf("'%s' -> %u\n", c, nc);
+    uint32_t inputLength;
+    const char **input = Day02_GetInput(&inputLength);
+    uint32_t result = day02_part1(input, inputLength);
+
+    printf("%u commands -> %u\n", inputLength, result);
 
     printf("Finished day02...\n");
 }
