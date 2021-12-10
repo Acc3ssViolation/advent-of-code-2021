@@ -93,9 +93,11 @@ day03_get_result:
     push {r4}
 
     // counts an array of words, so the values are 4 bytes in size
-    ldr r3, =4
-    mul length, r3, length
+    // We want to run from the back to the front, so we use length
+    // as the array pointer. Put it at the last entry:
+    lsl length, length, #2
     add length, counts, length
+    sub length, length, #4
 
     // Init result
     ldr result, =0
@@ -103,7 +105,7 @@ day03_get_result:
     // index 0: lsb, 11: msb
 1:
     // if counts[i] >= threshold
-    ldr temp, [counts]
+    ldr temp, [length]
     cmp temp, threshold
     blt 2f
     b 3f
@@ -119,11 +121,11 @@ day03_get_result:
     lsl result, result, #1
     // result |= temp
     orr result, result, temp
-    // counts++
-    add counts, counts, #4
+    // length--
+    sub length, length, #4
     // Are we done?
-    cmp counts, length
-    blt 1b
+    cmp length, counts
+    bge 1b
 
     // We got gamma, so now we need epsilon
     ldr r0, =#0xFFF
