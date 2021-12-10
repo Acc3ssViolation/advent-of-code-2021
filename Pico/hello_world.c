@@ -67,6 +67,14 @@ int main()
 
   while(true)
   {
+    if (false == stdio_usb_connected())
+    {
+      gpio_xor_mask(1 << LED_PIN);
+      watchdog_update();
+      sleep_ms(100);
+      continue;
+    }
+
     int chr = getchar_timeout_us(10000ul);
 
     watchdog_update();

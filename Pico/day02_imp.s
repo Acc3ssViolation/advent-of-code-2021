@@ -2,7 +2,7 @@
 .global day02_part1
 
 day02_part1:
-    // TODO: Save registers
+    // Save registers
     push {r4-r7, lr}
 
     // Parameters
@@ -49,6 +49,77 @@ day02_part1:
 3:
     // Decrement depth
     sub depth, depth, number
+4:
+    // Increment input to move to the next string
+    add input, input, #4
+    // Check if we hit the end of the array
+    cmp input, length
+    blt 1b
+
+    // Done, calculate the result which is horizontal * depth
+    mul depth, depth, horizontal
+    // Move to result register
+    mov r0, depth
+
+    // Pop lr from stack back into pc
+    pop {r4-r7, pc}
+
+//extern uint32_t day02_part2(const char **input, uint32_t length);
+.global day02_part2
+
+day02_part2:
+    // Save registers
+    push {r4-r7, lr}
+
+    // Parameters
+    input .req r0
+    length .req r1
+    string .req r2
+    number .req r3
+    firstByte .req r4
+    depth .req r5
+    horizontal .req r6
+    aim .req r7
+
+    // Result init
+    ldr depth, =0
+    ldr horizontal, =0
+    ldr aim, =0
+
+    // The ol' array end check setup
+    // It is an array of pointers, so the values are 4 bytes in size
+    ldr string, =4
+    mul length, string, length
+    add length, input, length
+1:
+    // Load string pointer
+    ldr string, [input]
+    // Find number in this command string
+    push {r0-r2}
+    mov r0, string
+    bl day02_get_number
+    mov number, r0
+    pop {r0-r2}
+    // Determine which operation to perform by looking at the first byte of the string
+    ldrb firstByte, [string]
+    cmp firstByte, #0x66 // 'f'
+    beq 2f
+    cmp firstByte, #0x75 // 'u'
+    beq 3f
+    // Just assume it's down since our input is perfect
+    // Increment aim
+    add aim, aim, number
+    b 4f
+2:
+    // Increment forward
+    add horizontal, horizontal, number
+    // reuse number for temp depth increment value
+    mul number, number, aim
+    add depth, depth, number
+    b 4f
+3:
+    // Decrement aim
+    sub aim, aim, number
 4:
     // Increment input to move to the next string
     add input, input, #4

@@ -9,6 +9,7 @@ extern uint32_t day01_imp_run(const uint32_t *input, uint32_t length);
 extern uint32_t day01_part2_imp_run(const uint32_t *input, uint32_t length);
 
 extern uint32_t day02_part1(const char **input, uint32_t length);
+extern uint32_t day02_part2(const char **input, uint32_t length);
 
 
 extern uint32_t day02_get_number(const char* input);
@@ -64,7 +65,9 @@ static void Day02Command(const char *commandString, size_t commandStringLength)
     uint32_t inputLength;
     const char **input = Day02_GetInput(&inputLength);
     uint32_t result = day02_part1(input, inputLength);
+    printf("%u commands -> %u\n", inputLength, result);
 
+    result = day02_part2(input, inputLength);
     printf("%u commands -> %u\n", inputLength, result);
 
     printf("Finished day02...\n");
