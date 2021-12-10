@@ -82,6 +82,8 @@ static void Day02Command(const char *commandString, size_t commandStringLength)
     printf("Finished day02...\n");
 }
 
+extern uint32_t day03_part1_counts;
+
 static void Day03Command(const char *commandString, size_t commandStringLength)
 {
     printf("Beginning day03...\n");
@@ -99,13 +101,23 @@ static void Day03Command(const char *commandString, size_t commandStringLength)
     // printf("'%s' -> %u\n", c, nc);
     uint32_t inputLength;
     const char **input = Day03_GetInput(&inputLength);
-    for (uint32_t i = 0; i < inputLength; i++)
-    {
-        uint32_t parsedValue = day03_get_number(input[i]);
-        printf("'%s' -> %06X\n", input[i], parsedValue);
-    }
-    // uint32_t result = day02_part1(input, inputLength);
-    // printf("%u commands -> %u\n", inputLength, result);
+    // for (uint32_t i = 0; i < inputLength; i++)
+    // {
+    //     uint32_t parsedValue = day03_get_number(input[i]);
+    //     printf("0b%s -> 0x%03X\n", input[i], parsedValue);
+    // }
+    // for (uint32_t i = 0; i < 12; i++)
+    // {
+    //     printf("0x%08X = 0x%08X\n", &((&day03_part1_counts)[i]), (&day03_part1_counts)[i]);
+    // }
+
+    uint32_t result = day03_part1(input, inputLength);
+    printf("%u commands -> %u\n", inputLength, result);
+
+    // for (uint32_t i = 0; i < 12; i++)
+    // {
+    //     printf("0x%08X = 0x%08X\n", &((&day03_part1_counts)[i]), (&day03_part1_counts)[i]);
+    // }
 
     // result = day02_part2(input, inputLength);
     // printf("%u commands -> %u\n", inputLength, result);

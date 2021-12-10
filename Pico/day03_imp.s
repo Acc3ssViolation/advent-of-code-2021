@@ -1,3 +1,5 @@
+.cpu cortex-m0
+
 //extern uint32_t day03_part1(const char **input, uint32_t length);
 .global day03_part1
 
@@ -9,60 +11,175 @@ day03_part1:
     input .req r0
     length .req r1
     string .req r2
-    number .req r3
-    firstByte .req r4
-    depth .req r5
-    horizontal .req r6
 
-    // Result init
-    ldr depth, =0
-    ldr horizontal, =0
+    // Calculate and store threshold on stack for later
+    lsr r3, length, #1
+    push {r3}
 
     // The ol' array end check setup
     // It is an array of pointers, so the values are 4 bytes in size
-    ldr string, =4
-    mul length, string, length
+    lsl length, length, #2
     add length, input, length
+
+    // Clear array to 0
+    push {r0-r2}
+    ldr r0, =day03_part1_counts
+    ldr r1, =12
+    lsl r1, r1, #2
+    add r1, r1, r0
+    eor r2, r2, r2
+1:
+    str r2, [r0]
+    add r0, r0, #4
+    cmp r0, r1
+    blt 1b
+    pop {r0-r2}
 1:
     // Load string pointer
     ldr string, [input]
     // Find number in this command string
     push {r0-r2}
+
     mov r0, string
-    bl day02_get_number
-    mov number, r0
+    bl day03_get_number
+    // number is now in r0
+    // Set up parameters
+    ldr r1, =day03_part1_counts
+    ldr r2, =12
+    // Process this number
+    bl day03_process_number
+
     pop {r0-r2}
-    // Determine which operation to perform by looking at the first byte of the string
-    ldrb firstByte, [string]
-    cmp firstByte, #0x66 // 'f'
-    beq 2f
-    cmp firstByte, #0x75 // 'u'
-    beq 3f
-    // Just assume it's down since our input is perfect
-    // Increment depth
-    add depth, depth, number
-    b 4f
-2:
-    // Increment forward
-    add horizontal, horizontal, number
-    b 4f
-3:
-    // Decrement depth
-    sub depth, depth, number
-4:
+
     // Increment input to move to the next string
     add input, input, #4
     // Check if we hit the end of the array
     cmp input, length
     blt 1b
 
-    // Done, calculate the result which is horizontal * depth
-    mul depth, depth, horizontal
-    // Move to result register
-    mov r0, depth
+    // Done!
+    // Set up parameters
+    ldr r0, =day03_part1_counts
+    ldr r1, =12
+    // This pops the initial push {r3} into r2
+    pop {r2}
+    // Calculate result
+    bl day03_get_result
 
     // Pop lr from stack back into pc
     pop {r4-r7, pc}
+
+    .unreq input
+    .unreq length
+    .unreq string
+
+.data 
+// Arrays for day03_part1
+.global day03_part1_counts
+day03_part1_counts:
+    .word 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+.text
+
+
+// uint32_t day03_get_result(uint32_t *counts, uint32_t length, uint32_t threshold)
+.global day03_get_result
+day03_get_result:
+    counts .req r0
+    length .req r1
+    threshold .req r2
+    result .req r3
+    temp .req r4
+
+    push {r4}
+
+    // counts an array of words, so the values are 4 bytes in size
+    ldr r3, =4
+    mul length, r3, length
+    add length, counts, length
+
+    // Init result
+    ldr result, =0
+
+    // index 0: lsb, 11: msb
+1:
+    // if counts[i] >= threshold
+    ldr temp, [counts]
+    cmp temp, threshold
+    blt 2f
+    b 3f
+2:
+    // counts[i] < threshold, temp = 0
+    ldr temp, =0
+    b 4f    
+3:
+    // counts[i] >= threshold, temp = 0
+    ldr temp, =1
+4:
+    // result <<= 1
+    lsl result, result, #1
+    // result |= temp
+    orr result, result, temp
+    // counts++
+    add counts, counts, #4
+    // Are we done?
+    cmp counts, length
+    blt 1b
+
+    // We got gamma, so now we need epsilon
+    ldr r0, =#0xFFF
+    eor r0, result, r0
+    mul r0, result, r0
+
+    // Restore and exit
+    pop {r4}
+    bx lr
+
+    .unreq counts
+    .unreq length
+    .unreq threshold
+    .unreq result
+    .unreq temp
+
+// void day03_process_number(uint32_t number, uint32_t *counts, uint32_t length)
+.global day03_process_number
+day03_process_number:
+    number .req r0
+    counts .req r1
+    length .req r2
+    temp .req r3
+
+    // counts is an array of words, so the values are 4 bytes in size
+    // store the first word address past the array in length
+    ldr r3, =4
+    mul length, r3, length
+    add length, counts, length
+
+    // index 0: lsb, 11: msb
+1:
+    ldr temp, =1
+    // Is LSB set?
+    and temp, number, temp
+    // Jump if Zero flag is set (e.g. bit was not set)
+    beq 2f
+    // Increment count
+    ldr temp, [counts]
+    add temp, temp, #1
+    str temp, [counts]
+2:
+    // number >>= 1
+    lsr number, number, #1
+    // counts++
+    add counts, counts, #4
+    // Are we done?
+    cmp counts, length
+    blt 1b
+    // Yes
+    bx lr
+
+    .unreq counts
+    .unreq length
+    .unreq number
+    .unreq temp
 
 // Binary string parsing
 // uint32_t day03_get_number(const char* input)

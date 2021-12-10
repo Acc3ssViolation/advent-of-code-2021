@@ -3,6 +3,7 @@
 #include "pico/stdlib.h"
 #include "hardware/exception.h"
 #include "hardware/watchdog.h"
+#include "pico/platform.h"
 #include "commands.h"
 #include "day01.h"
 
@@ -10,21 +11,29 @@
 
 #define LED_PIN (25)
 
+#define RESET_BY_HARDFAULT    (0xDEADBEEF)
+
 static CommandEntry_t m_commandEntries[MAX_COMMAND_ENTRIES];
 static uint8_t m_nrOfCommandEntries;
 static bool m_resetByWatchdog;
+static bool m_resetByHardFault;
+
+static uint32_t __uninitialized_ram() m_resetByHardFaultCode;
+
+static void HardfaultHandler(void);
 
 static void LedOnCommand(const char *commandString, size_t commandStringLength);
 static void LedOffCommand(const char *commandString, size_t commandStringLength);
 static void HelpCommand(const char *commandString, size_t commandStringLength);
 static void InfoCommand(const char *commandString, size_t commandStringLength);
-
-static void HardfaultHandler(void);
+static void ResetCommand(const char *commandString, size_t commandStringLength);
 
 int main()
 {
   stdio_init_all();
 
+  m_resetByHardFault = (m_resetByHardFaultCode == RESET_BY_HARDFAULT);
+  m_resetByHardFaultCode = 0;
   m_resetByWatchdog = watchdog_caused_reboot();
 
   exception_handler_t originalHandler = exception_set_exclusive_handler(HARDFAULT_EXCEPTION, HardfaultHandler);
@@ -54,8 +63,14 @@ int main()
       .handler = InfoCommand,
   };
 
+  const CommandEntry_t resetEntry = {
+      .command = "reset",
+      .handler = ResetCommand,
+  };
+
   Commands_Add(&helpEntry);
   Commands_Add(&infoEntry);
+  Commands_Add(&resetEntry);
   Commands_Add(&ledOnEntry);
   Commands_Add(&ledOffEntry);
 
@@ -148,6 +163,14 @@ bool Commands_Add(const CommandEntry_t* command)
   return false;
 }
 
+static void HardfaultHandler(void)
+{
+  // Log reason
+  m_resetByHardFaultCode = RESET_BY_HARDFAULT;
+  // Wait for watchdog to reset us
+  while(1) {}
+}
+
 static void HelpCommand(const char *commandString, size_t commandStringLength)
 {
   for (int i = 0; i < m_nrOfCommandEntries; i++)
@@ -170,11 +193,15 @@ static void LedOffCommand(const char *commandString, size_t commandStringLength)
 
 static void InfoCommand(const char *commandString, size_t commandStringLength)
 {
-  printf("Reset by watchdog: %s", m_resetByWatchdog ? "yes" : "no");
+  printf("Reset by watchdog: %s\n", m_resetByWatchdog ? "yes" : "no");
+  printf("Reset by hard fault: %s", m_resetByHardFault ? "yes" : "no");
 }
 
-static void HardfaultHandler(void)
+static void ResetCommand(const char *commandString, size_t commandStringLength)
 {
-  // Wait for watchdog to reset us
-  while(1) {}
+  printf("Resetting device...\n");
+  while (1)
+  {
+    // Wait for watchdog to reset us
+  }
 }
