@@ -13,6 +13,8 @@ add_executable(hello_world
     day01_imp.s
     day02_data.c
     day02_imp.s
+    day03_data.c
+    day03_imp.s
 )
 
 target_link_libraries(hello_world pico_stdlib hardware_exception hardware_watchdog)

@@ -9,4 +9,6 @@ uint32_t* Day01_GetInput(uint32_t *count);
 
 const char** Day02_GetInput(uint32_t *count);
 
+const char** Day03_GetInput(uint32_t *count);
+
 #endif
