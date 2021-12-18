@@ -14,7 +14,8 @@ namespace Adv.NET
             var days = new IAssignment[]
             {
                 new Day03(),
-                new Day04()
+                new Day04(),
+                new Day05()
             };
 
             foreach (var assignment in days)
