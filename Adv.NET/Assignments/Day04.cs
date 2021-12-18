@@ -12,8 +12,6 @@ namespace Adv.NET.Assignments
         private int[] _numbers;
         private int[] _markedRowCount;
         private int[] _markedColumnCount;
-        private int _markedDiagCount1;
-        private int _markedDiagCount2;
 
         public Board(IReadOnlyList<int> numbers, int size)
         {
@@ -37,11 +35,6 @@ namespace Adv.NET.Assignments
                     if (++_markedRowCount[row] == Size)
                         return true;
                     if (++_markedColumnCount[col] == Size)
-                        return true;
-
-                    if (row == col && (++_markedDiagCount1 == Size))
-                        return true;
-                    if (row == (Size - 1 - col) && (++_markedDiagCount2 == Size))
                         return true;
                 }
             }
@@ -79,6 +72,67 @@ namespace Adv.NET.Assignments
 
         public void Run(IReadOnlyList<string> input)
         {
+            var (bingoNumbers, boards) = Load(input);
+            Part1(bingoNumbers, boards);
+            (bingoNumbers, boards) = Load(input);
+            Part2(bingoNumbers, boards);
+        }
+
+        private void Part1(List<int> bingoNumbers, List<Board> boards)
+        {
+            Console.WriteLine("-------------------------------------------------");
+            Console.WriteLine("Part 1");
+            Console.WriteLine("-------------------------------------------------");
+
+            foreach (var number in bingoNumbers)
+            {
+                foreach (var board in boards)
+                {
+                    if (board.Mark(number))
+                    {
+                        var score = board.GetScore();
+                        Console.WriteLine($"First board score: {score}");
+                        Console.WriteLine($"Final result: {score} * {number} = {score * number}");
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void Part2(List<int> bingoNumbers, List<Board> boards)
+        {
+            Console.WriteLine("-------------------------------------------------");
+            Console.WriteLine("Part 2");
+            Console.WriteLine("-------------------------------------------------");
+
+            var boardsToRemove = new HashSet<Board>();
+            foreach (var number in bingoNumbers)
+            {
+                var anyBoardDone = false;
+
+                foreach (var board in boards)
+                {
+                    if (board.Mark(number))
+                    {
+                        boardsToRemove.Add(board);
+                        anyBoardDone = true;
+                    }
+                }
+
+                if (boards.Count == 1 && anyBoardDone)
+                {
+                    var score = boards[0].GetScore();
+                    Console.WriteLine($"Last board score: {score}");
+                    Console.WriteLine($"Final result: {score} * {number} = {score * number}");
+                    return;
+                }
+
+                boards.RemoveAll(b => boardsToRemove.Contains(b));
+            }
+        }
+
+        private (List<int>, List<Board>) Load(IReadOnlyList<string> input)
+        {
             var bingoNumbers = input[0].Split(',').Select(s => int.Parse(s)).ToList();
             var boards = new List<Board>();
 
@@ -98,22 +152,7 @@ namespace Adv.NET.Assignments
                 i += size;
             }
 
-            foreach (var number in bingoNumbers)
-            {
-                Console.WriteLine($"Number: {number}");
-                foreach (var board in boards)
-                {
-                    if (board.Mark(number))
-                    {
-                        var score = board.GetScore();
-                        Console.WriteLine($"First board score: {score}");
-                        Console.WriteLine($"Final result: {score} * {number} = {score * number}");
-                        return;
-                    }
-
-                    Console.WriteLine(board);
-                }
-            }
+            return (bingoNumbers, boards);
         }
     }
 }
