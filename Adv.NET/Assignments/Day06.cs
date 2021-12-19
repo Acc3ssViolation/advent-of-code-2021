@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Adv.NET.Assignments
 {
-    class Day06 : IAsyncAssignment
+    class Day06 : IAssignment
     {
         public string Name => nameof(Day06);
 
@@ -17,18 +17,13 @@ namespace Adv.NET.Assignments
 
         public void Run(IReadOnlyList<string> input)
         {
-            RunAsync(input).Wait();
-        }
-
-        public async Task RunAsync(IReadOnlyList<string> input)
-        {
             var fish = LoadFish(input);
-            await PartAsync(fish, 1);
+            Part(fish, 1);
             fish = LoadFish(input);
-            await PartAsync(fish, 2);
+            Part(fish, 2);
         }
 
-        private async Task PartAsync(List<int> fish, int part)
+        private void Part(List<int> fish, int part)
         {
             Console.WriteLine("-------------------------------------------------");
             Console.WriteLine($"Part {part}");

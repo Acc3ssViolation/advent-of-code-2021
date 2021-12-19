@@ -1,5 +1,6 @@
 ﻿using Adv.NET.Assignments;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Adv.NET
@@ -18,9 +19,10 @@ namespace Adv.NET
                 new Day04(),
                 new Day05(),
                 new Day06(),
+                new Day07(),
             };
 
-            foreach (var assignment in days)
+            foreach (var assignment in days.Skip(days.Length - 1))
             {
                 Console.WriteLine("=================================================");
                 Console.WriteLine(assignment.Name);

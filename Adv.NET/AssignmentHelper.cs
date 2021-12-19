@@ -23,5 +23,12 @@ namespace Adv.NET
                 return null;
             }
         }
+
+        public static void PrintSeparator(int part)
+        {
+            Console.WriteLine("-------------------------------------------------");
+            Console.WriteLine($"Part {part}");
+            Console.WriteLine("-------------------------------------------------");
+        }
     }
 }
