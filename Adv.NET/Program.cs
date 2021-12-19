@@ -20,6 +20,7 @@ namespace Adv.NET
                 new Day05(),
                 new Day06(),
                 new Day07(),
+                new Day08()
             };
 
             foreach (var assignment in days.Skip(days.Length - 1))
