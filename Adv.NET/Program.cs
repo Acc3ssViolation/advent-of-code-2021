@@ -1,11 +1,12 @@
 ﻿using Adv.NET.Assignments;
 using System;
+using System.Threading.Tasks;
 
 namespace Adv.NET
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Hello World!");
 
@@ -33,7 +34,10 @@ namespace Adv.NET
                     continue;
                 }
 
-                assignment.Run(input);
+                if (assignment is IAsyncAssignment asyncAssignment)
+                    await asyncAssignment.RunAsync(input).ConfigureAwait(false);
+                else
+                    assignment.Run(input);
             }
         }
     }
